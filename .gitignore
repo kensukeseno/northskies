@@ -1,0 +1,24 @@
+# Ignore Visual Studio files
+.vs/
+.idea/
+# User-specific files
+*.user
+*.suo
+*.userosscache
+# Build results
+bin/
+obj/
+# NuGet packages
+packages/
+# Ignore database files
+*.mdf
+*.ldf
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+# Windows Installer log files
+*.cab
+*.msi
+*.log
