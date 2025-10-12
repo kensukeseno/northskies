@@ -20,6 +20,5 @@ namespace NorthSkies.Models
             Lat = lat;
             Lon = lon;
         }
-
     }
 }

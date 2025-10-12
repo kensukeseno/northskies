@@ -1,6 +1,7 @@
 using NorthSkies.Models;
 using NorthSkies.Renderers;
 using NorthSkies.Services;
+using System.Diagnostics;
 
 namespace NorthSkies
 {
@@ -9,15 +10,21 @@ namespace NorthSkies
         private IWeatherService _weatherService;
         private ICityRepository _cityManager;
         private WeatherIconRenderer _iconRenderer;
-        private List<City> _savedCities;
+        private List<string> _savedCities;
+
         public Form1()
         {
             InitializeComponent();
 
             _weatherService = new WeatherService();
-            _cityManager = new CityManager();
-            _savedCities = _cityManager.LoadSavedCities();
             _iconRenderer = new WeatherIconRenderer();
+
+            string folder = "Data";
+            string fileName = "SavedCities.txt";
+            string filePath = Path.Combine(folder, fileName);
+            _cityManager = new CityManager(filePath);
+            _savedCities = _cityManager.LoadSavedCities();
+
         }
     }
 }
