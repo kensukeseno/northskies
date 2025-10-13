@@ -7,24 +7,29 @@ using NorthSkies.Models.Enums;
 
 namespace NorthSkies.Models
 {
-    internal class WeatherData
+    public class WeatherData
     {
         public DateTime TimeStamp { get; }
-        public double Temperature { get; }
-        public double FeelsLike { get; }
+        public double TempF { get; }
+        public double TempC { get; }
+        public double FeelsLikeF { get; }
+        public double FeelsLikeC { get; }
         public double Humidity { get; }
-        public double WindSpeed { get; }
+        public double WindSpeedMPH { get; }
+        public double WindSpeedKPH { get; }
         public WeatherCondition Condition { get; }
         public double? PrecipitationChance { get; }
-        public UnitSystem UnitSystem { get; }
 
-        public WeatherData(DateTime timestamp, double temperature, double feelsLike, double humidity, double windSpeed, WeatherCondition condition, double precipitationChance)
+        public WeatherData(DateTime timestamp, double tempF, double tempC, double feelsLikeF, double feelsLikeC, double humidity, double windSpeedMPH, double windSpeedKPH, WeatherCondition condition, double? precipitationChance)
         {
             TimeStamp = timestamp;
-            Temperature = temperature;
-            FeelsLike = feelsLike;
+            TempF = tempF;
+            TempC = tempC;
+            FeelsLikeF = feelsLikeF;
+            FeelsLikeC = feelsLikeC;
             Humidity = humidity;
-            WindSpeed = windSpeed;
+            WindSpeedMPH = windSpeedMPH;
+            WindSpeedKPH = windSpeedKPH;
             Condition = condition;
             PrecipitationChance = precipitationChance;
         }

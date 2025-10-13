@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NorthSkies.Models.Enums
 {
-    internal enum WeatherCondition
+    public enum WeatherCondition
     {
         Sunny, Fog, Cloudy, Overcast, Rain, Snow, Hail, Blizzard
     }
