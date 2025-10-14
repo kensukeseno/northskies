@@ -56,7 +56,6 @@ namespace NorthSkies.Services
             //JSON Deserializer helps with parsing JSON responses
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
-
             var current = root.GetProperty("current");
 
 
@@ -100,18 +99,6 @@ namespace NorthSkies.Services
 
 
 
-        private WeatherCondition MapCondition(string text)
-        {
-            return text.ToLower().Trim() switch
-            {
-                "sunny" => WeatherCondition.Sunny,
-                "cloudy" => WeatherCondition.Cloudy,
-                "overcast" => WeatherCondition.Overcast,
-                "rain" => WeatherCondition.Rain,
-                "snow" => WeatherCondition.Snow,
-                _ => WeatherCondition.Cloudy
-            };
-        }
 
     }
 
