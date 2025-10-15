@@ -1,7 +1,9 @@
+using System;
 using System.Text.Json;
 using NorthSkies.Models;
-using NorthSkies.Models.Enums;
-using System;
+using NorthSkies.Services.Mapping;
+using NorthSkies.DTOs;
+
 
 namespace NorthSkies.Services
 {
@@ -10,94 +12,46 @@ namespace NorthSkies.Services
     {
         private readonly string _apiKey;
         private readonly string _baseUrl;
+        private readonly WeatherMapper_WeatherAPI _mapper;
+
 
         public WeatherService_WeatherAPI(string apiKey)
         {
             _apiKey = apiKey;
             _baseUrl = "https://api.weatherapi.com/v1";
-        }
-        
-        public async Task<WeatherData> GetCurrentWeatherAsync(City city)
-        {
-            using (var client = new HttpClient())
-            {
-                var url = $"{_baseUrl}/forecast.json?key={_apiKey}&q={city.Name}&aqi=no";
-                var response = await client.GetStringAsync(url);
-                // Parse response and return WeatherData
-                return ParseCurrentWeather(response);
-            }
+            _mapper = new WeatherMapper_WeatherAPI();
         }
 
-        
+       
+        public async Task<WeatherData> GetCurrentWeatherAsync(City city)
+        {
+            using var client = new HttpClient();
+            var url = $"{_baseUrl}/forecast.json?key={_apiKey}&q={city.Name}&aqi=no";
+            var response = await client.GetStringAsync(url);
+
+            var dto = JsonSerializer.Deserialize<WeatherApiResponse>(response);
+            return _mapper.MapCurrent(dto.current);
+        }
+
         public async Task<List<WeatherData>> GetHourlyForecastAsync(City city)
         {
-            using (var client = new HttpClient())
-            {
-                var url = $"{_baseUrl}/forecast.json?key={_apiKey}&q={city}&hours=24";
-                var response = await client.GetStringAsync(url);
-                // Parse response and return list of WeatherData
-                return ParseHourlyForecast(response);
-            }
+            using var client = new HttpClient();
+            var url = $"{_baseUrl}/forecast.json?key={_apiKey}&q={city.Name}&hours=24";
+            var response = await client.GetStringAsync(url);
+
+            var dto = JsonSerializer.Deserialize<WeatherApiResponse>(response);
+            return _mapper.MapHourly(dto.forecast);
         }
 
         public async Task<List<WeatherData>> GetDailyForecastAsync(City city)
         {
-            using (var client = new HttpClient())
-            {
-                var url = $"{_baseUrl}/forecast.json?key={_apiKey}&q={city}&days=7";
-                var response = await client.GetStringAsync(url);
-                // Parse response and return list of WeatherData
-                return ParseDailyForecast(response);
-            }
+            using var client = new HttpClient();
+            var url = $"{_baseUrl}/forecast.json?key={_apiKey}&q={city.Name}&days=7";
+            var response = await client.GetStringAsync(url);
+
+            var dto = JsonSerializer.Deserialize<WeatherApiResponse>(response);
+            return _mapper.MapDaily(dto.forecast);
         }
-
-        private WeatherData ParseCurrentWeather(string json)
-        {
-            //JSON Deserializer helps with parsing JSON responses
-            using var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
-            var current = root.GetProperty("current");
-
-
-            var timestamp = DateTime.Parse(current.GetProperty("last_updated").GetString());
-            var tempF = current.GetProperty("temp_f").GetDouble();
-            var tempC = current.GetProperty("temp_c").GetDouble();
-            var feelsLikeF = current.GetProperty("feelslike_f").GetDouble();
-            var feelsLikeC = current.GetProperty("feelslike_c").GetDouble();
-            var humidity = current.GetProperty("humidity").GetInt32();
-            var windMPH = current.GetProperty("wind_mph").GetDouble();
-            var windKPH = current.GetProperty("wind_kph").GetDouble();
-            var conditionText = current.GetProperty("condition").GetProperty("text").GetString();
-            var precipitationChance = current.TryGetProperty("precip_mm", out var precip) ? precip.GetDouble() : (double?)null;
-
-            return new WeatherData(
-                timestamp,
-                tempF,
-                tempC,
-                feelsLikeF,
-                feelsLikeC,
-                humidity,
-                windMPH,
-                windKPH,
-                MapCondition(conditionText),
-                precipitationChance
-            );
-        }
-
-
-        private List<WeatherData> ParseHourlyForecast(string json)
-        {
-            // Implement JSON parsing logic to convert to list of WeatherData
-            return new List<WeatherData>();
-        }
-
-        private List<WeatherData> ParseDailyForecast(string json)
-        {
-            // Implement JSON parsing logic to convert to list of WeatherData
-            return new List<WeatherData>();
-        }
-
-
 
 
     }

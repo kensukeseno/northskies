@@ -27,8 +27,8 @@ namespace NorthSkies.Services.Mapping
                 feelsLikeF: current.feelslike_f,
                 feelsLikeC: current.feelslike_c,
                 humidity: current.humidity,
-                windMPH: current.wind_mph,
-                windKPH: current.wind_kph,
+                windSpeedMPH: current.wind_mph,
+                windSpeedKPH: current.wind_kph,
                 condition: condition,
                 precipitationChance: null
             );
@@ -46,7 +46,8 @@ namespace NorthSkies.Services.Mapping
                 foreach (var h in day.hour)
                 {
                     var condition = WeatherCondition.FromCode(h.condition.code);
-                    bool isDay = h.is_day == 1;
+                    //bool isDay = h.is_day == 1;
+                    bool isDay = true;
 
                     result.Add(new WeatherData(
                         timestamp: ParseDate(h.time),
@@ -55,8 +56,8 @@ namespace NorthSkies.Services.Mapping
                         feelsLikeF: h.feelslike_f,
                         feelsLikeC: h.feelslike_c,
                         humidity: h.humidity,
-                        windMPH: h.wind_mph,
-                        windKPH: h.wind_kph,
+                        windSpeedMPH: h.wind_mph,
+                        windSpeedKPH: h.wind_kph,
                         condition: condition,
                         precipitationChance: null
                     ));
@@ -95,8 +96,8 @@ namespace NorthSkies.Services.Mapping
                     feelsLikeF: d.avgtemp_f,
                     feelsLikeC: d.avgtemp_c,
                     humidity: 0, // daily summary doesn’t include humidity
-                    windMPH: 0,  // daily summary doesn’t include wind
-                    windKPH: 0,
+                    windSpeedMPH: 0,  // daily summary doesn’t include wind
+                    windSpeedKPH: 0,
                     condition: condition,              // full WeatherCondition object
                     precipitationChance: null          // could be extended if you want to use chance_of_rain/snow
                 ));

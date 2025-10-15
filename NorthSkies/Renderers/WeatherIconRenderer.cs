@@ -14,22 +14,9 @@ namespace NorthSkies.Renderers
         public Image GetIcon(WeatherCondition condition)
         {
             return null;
-        }*/
-
-        public Image GetIcon(int conditionCode, bool isDay)
-        {
-            string timeOfDay = isDay ? "day" : "night";
-            string localPath = $"Assets/Icons/{timeOfDay}_{conditionCode}.png";
-
-            if (File.Exists(localPath))
-                return Image.FromFile(localPath);
-
-            string url = $"https://cdn.weatherapi.com/weather/64x64/{timeOfDay}/{conditionCode}.png";
-            using var client = new WebClient();
-            client.DownloadFile(url, localPath);
-
-            return Image.FromFile(localPath);
         }
+        */
+        
 
     }
 }

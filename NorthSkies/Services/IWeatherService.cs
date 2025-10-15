@@ -14,10 +14,5 @@ namespace NorthSkies.Services
         public Task<List<WeatherData>> GetHourlyForecastAsync(City city);
         public Task<List<WeatherData>> GetDailyForecastAsync(City city);
     }
-    //internal class WeatherService: IWeatherService
-    //{
-    //    public WeatherData GetCurrentWeather(City city) { return null;  }
-    //    public List<WeatherData> GetHourlyForecast(City city) { return null; }
-    //    public List<WeatherData> GetDailyForecast(City city) {  return null; }
-    //}
+
 }
