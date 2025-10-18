@@ -9,11 +9,18 @@ namespace NorthSkies.Renderers
 {
     internal class WeatherIconRenderer
     {
-        private Dictionary<WeatherCondition, Image> _icons;
+        /*private Dictionary<WeatherCondition, Image> _icons;
 
         public Image GetIcon(WeatherCondition condition)
         {
             return null;
         }
+        */
+
+
+        /* AL - just use WeatherCondition.GetIconUrl
+         */
+
+
     }
 }

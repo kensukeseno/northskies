@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NorthSkies.Models
 {
-    internal class City
+    public class City
     {
         public string Name { get; }
         public string Country { get; }
