@@ -8,7 +8,12 @@ namespace NorthSkies.Services.Mapping
 {
     public class WeatherMapper_WeatherAPI : IWeatherMapper
     {
-        
+        /* AL - parses the three main structure in the API response - current weather, daily forecast, and hourly forecast
+         * 
+         * The WeatherService pulls data from the API
+         * The data is stored in the DTOs whose structure matches with the API response
+         * This class then moves the data in the DTOs into our models.
+         */
 
         public WeatherData MapCurrent(CurrentDto current)
         {
@@ -16,9 +21,6 @@ namespace NorthSkies.Services.Mapping
 
             // Look up the condition object from the WeatherAPI code
             var condition = WeatherCondition.FromCode(current.condition.code);
-
-            // Decide which text/icon to use based on is_day
-            bool isDay = current.is_day == 1;
 
             return new WeatherData(
                 timestamp: ParseDate(current.last_updated),
@@ -39,15 +41,13 @@ namespace NorthSkies.Services.Mapping
             var result = new List<WeatherData>();
             if (forecast?.forecastday == null) return result;
 
-            foreach (var day in forecast.forecastday)
+            foreach (var day in forecast.forecastday) //loop through the days
             {
                 if (day.hour == null) continue;
 
-                foreach (var h in day.hour)
+                foreach (var h in day.hour) //loop through the hours per day
                 {
                     var condition = WeatherCondition.FromCode(h.condition.code);
-                    //bool isDay = h.is_day == 1;
-                    bool isDay = true;
 
                     result.Add(new WeatherData(
                         timestamp: ParseDate(h.time),
@@ -82,10 +82,6 @@ namespace NorthSkies.Services.Mapping
                 // Look up the condition object from the WeatherAPI code
                 var condition = WeatherCondition.FromCode(d.condition.code);
 
-                // For daily summaries, WeatherAPI doesn’t give is_day,
-                // so we’ll default to the "day" variant for text/icon.
-                bool isDay = true;
-
                 // Use the date at noon as the representative timestamp
                 var timestamp = ParseDate($"{day.date} 12:00");
 
@@ -95,16 +91,13 @@ namespace NorthSkies.Services.Mapping
                     tempC: d.avgtemp_c,
                     feelsLikeF: d.avgtemp_f,
                     feelsLikeC: d.avgtemp_c,
-                    humidity: 0, // daily summary doesn’t include humidity
-                    windSpeedMPH: 0,  // daily summary doesn’t include wind
+                    humidity: d.avghumidity,
+                    windSpeedMPH: 0,  // daily summary doesn’t include wind. boooo
                     windSpeedKPH: 0,
-                    condition: condition,              // full WeatherCondition object
-                    precipitationChance: null          // could be extended if you want to use chance_of_rain/snow
+                    condition: condition,
+                    precipitationChance: null
                 ));
 
-                // UI layer can later do:
-                // string label = isDay ? condition.DayText : condition.NightText;
-                // string iconUrl = condition.GetIconUrl(isDay);
             }
 
             return result;

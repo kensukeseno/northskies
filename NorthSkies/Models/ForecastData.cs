@@ -7,6 +7,9 @@ using NorthSkies.Models.Enums;
 
 namespace NorthSkies.Models
 {
+    /* AL extends current data with forecasted information:
+     * Minimum Temp, Maximum Temp, Average Temp - in C and F
+    */
     internal class ForecastData : WeatherData
     {
         public double MinTempF { get; }

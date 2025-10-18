@@ -16,7 +16,11 @@ namespace NorthSkies.Renderers
             return null;
         }
         */
-        
+
+
+        /* AL - just use WeatherCondition.GetIconUrl
+         */
+
 
     }
 }

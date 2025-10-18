@@ -7,6 +7,12 @@ using NorthSkies.DTOs;
 
 namespace NorthSkies.Services
 {
+    /* AL - fetches weather data from the API server
+     * 
+     * This class pulls data from the API
+     * The data is stored in the DTOs whose structure matches with the API response
+     * WeatherMapper then moves the data in the DTOs into our models.
+     */
 
     public class WeatherService_WeatherAPI : IWeatherService
     {

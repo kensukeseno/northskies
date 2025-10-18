@@ -4,6 +4,9 @@ namespace NorthSkies.Models
 {
     public class WeatherCondition
     {
+        /* AL - changed into class from enum
+         * Easier to translate code pulled from the API and let the interface use the text and icon
+         */
         public int Code { get; }
         public string DayText { get; }
         public string NightText { get; }

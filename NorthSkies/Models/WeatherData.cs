@@ -7,6 +7,8 @@ using NorthSkies.Models.Enums;
 
 namespace NorthSkies.Models
 {
+    /* AL - main model for weather data : current
+     */
     public class WeatherData
     {
         public DateTime TimeStamp { get; }
