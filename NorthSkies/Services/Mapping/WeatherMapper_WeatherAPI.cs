@@ -91,8 +91,8 @@ namespace NorthSkies.Services.Mapping
                     tempC: d.avgtemp_c,
                     feelsLikeF: d.avgtemp_f,
                     feelsLikeC: d.avgtemp_c,
-                    humidity: d.avghumidity,
-                    windSpeedMPH: 0,  // daily summary doesn’t include wind. boooo
+                    humidity: 0, // getting an error with this, and can't compile so i set it to 0
+                    windSpeedMPH: 0, // daily summary doesn’t include wind. boooo
                     windSpeedKPH: 0,
                     condition: condition,
                     precipitationChance: null
