@@ -7,5 +7,5 @@ namespace NorthSkies.DTOs
 		public LocationDto location { get; set; }
 		public CurrentDto current { get; set; }
 		public ForecastDto forecast { get; set; }
-	}
+    }
 }

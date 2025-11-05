@@ -17,16 +17,13 @@ namespace NorthSkies
             base.Dispose(disposing);
         }
 
-        private WeatherService_WeatherAPI _weatherService;
-        private ICityRepository _cityManager;
-        private WeatherIconRenderer _iconRenderer;
-        private List<string> _savedCities;
-
         private TabControl tabControl;
-        private Label lblTemp, lblWind, lblHumidity;
+        private Label lblTemp, lblWind, lblHumidity, lblUnits, lblDefaultCity, lblDefaultCityName, lblSavedCities, lblSearchCity;
         private PictureBox picWeather;
+        private TextBox txtBoxCity;
         private TableLayoutPanel forecastPanel;
-        private ComboBox cmbUnits;
+        private ComboBox cmbUnits, savedCities;
+        private Button btnSetDefaullt, btnShowWeather1, btnShowWeather2, btnAddSavedCity;
 
         private void InitializeTabs()
         {
@@ -42,12 +39,15 @@ namespace NorthSkies
 
         private void InitializeCurrentWeatherTab()
         {
+            // Assign the "Current" tab to a tab page
             TabPage currentTab = tabControl.TabPages[0];
 
+            // Design the contents in the "Current" tab
             lblTemp = new Label() { Location = new Point(20, 20), AutoSize = true };
             lblWind = new Label() { Location = new Point(20, 50), AutoSize = true };
             lblHumidity = new Label() { Location = new Point(20, 80), AutoSize = true };
 
+            // Design the weather icon
             picWeather = new PictureBox()
             {
                 Location = new Point(400, 20),
@@ -56,6 +56,7 @@ namespace NorthSkies
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
 
+            // Add all the designed contents to the tab page
             currentTab.Controls.Add(lblTemp);
             currentTab.Controls.Add(lblWind);
             currentTab.Controls.Add(lblHumidity);
@@ -64,8 +65,10 @@ namespace NorthSkies
 
         private void InitializeForecastTab()
         {
+            // Assign the "7-Day Forecast" tab to a tab page
             TabPage forecastTab = tabControl.TabPages[1];
 
+            // Prepare 7 columns for 7-day forecast
             forecastPanel = new TableLayoutPanel()
             {
                 RowCount = 1,
@@ -75,29 +78,61 @@ namespace NorthSkies
                 CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
             };
 
+            // Set the width to each column
             for (int i = 0; i < 7; i++)
             {
                 forecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 7f));
             }
 
+            // Add initial contents to each column
             forecastPanel.Controls.Add(new Label() { Text = "Day", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 0, 0);
             forecastPanel.Controls.Add(new Label() { Text = "Condition", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 1, 0);
             forecastPanel.Controls.Add(new Label() { Text = "Temp", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 2, 0);
 
+            // Add all the designed contents to the tab page
             forecastTab.Controls.Add(forecastPanel);
         }
 
         private void InitializeSettingsTab()
         {
+            // Assign the "Setting" tab to a tab page
             TabPage settingsTab = tabControl.TabPages[2];
 
-            Label lblUnits = new Label() { Text = "Units:", Location = new Point(20, 20), AutoSize = true };
-            cmbUnits = new ComboBox() { Location = new Point(80, 20), Width = 150 };
+            // Design the contents in the "Setting" tab
+            lblUnits = new Label() { Text = "Units:", Location = new Point(20, 20), AutoSize = true };
+            cmbUnits = new ComboBox() { Location = new Point(100, 20), Width = 150 };
             cmbUnits.Items.AddRange(new string[] { "Metric (°C, km/h)", "Imperial (°F, mph)" });
             cmbUnits.SelectedIndex = 0;
+            lblDefaultCity = new Label() { Text = "Default City: ", Location = new Point(20, 50), AutoSize = true };
+            lblDefaultCityName = new Label() { Location = new Point(100, 50), AutoSize = true };
+            lblSavedCities = new Label() { Text = "Saved Cities:", Location = new Point(20, 80), AutoSize = true };
+            savedCities = new ComboBox() { Location = new Point(100, 80), Width = 150 };
+            savedCities.DropDownStyle = ComboBoxStyle.DropDownList;
+            btnShowWeather1 = new Button() { Text = "Show Weather", Location = new Point(270, 80), AutoSize = true };
+            btnShowWeather1.Click += BtnShowWeather1_Click;
+            btnSetDefaullt = new Button() { Text = "Set As Default", Location = new Point(380, 80), AutoSize = true };
+            btnSetDefaullt.Click += BtnSetDefault_Click;
+            lblSearchCity = new Label() { Text = "Search City:", Location = new Point(20, 110), AutoSize = true };
+            txtBoxCity = new TextBox() { Location = new Point(100, 110), AutoSize = true };
+            btnShowWeather2 = new Button() { Text = "Show Weather", Location = new Point(270, 110), AutoSize = true };
+            btnShowWeather2.Click += BtnShowWeather2_Click;
+            btnAddSavedCity = new Button() { Text = "Add to Saved Cities", Location = new Point(380, 110), AutoSize = true };
+            btnAddSavedCity.Click += BtnAddSavedCity_Click;
 
+
+            // Add all the designed contents to the tab page
             settingsTab.Controls.Add(lblUnits);
             settingsTab.Controls.Add(cmbUnits);
+            settingsTab.Controls.Add(lblDefaultCity);
+            settingsTab.Controls.Add(lblDefaultCityName);
+            settingsTab.Controls.Add(lblSavedCities);
+            settingsTab.Controls.Add(savedCities);
+            settingsTab.Controls.Add(btnShowWeather1);
+            settingsTab.Controls.Add(btnSetDefaullt);
+            settingsTab.Controls.Add(lblSearchCity);
+            settingsTab.Controls.Add(txtBoxCity);
+            settingsTab.Controls.Add(btnShowWeather2);
+            settingsTab.Controls.Add(btnAddSavedCity);
         }
 
         private void InitializeComponent()
@@ -111,26 +146,14 @@ namespace NorthSkies
             ClientSize = new Size(876, 504);
             Margin = new Padding(2, 2, 2, 2);
             Name = "Form1";
-            Text = "Form1";
+            Text = "NorthSkies";
             ResumeLayout(false);
 
-            _weatherService = new WeatherService_WeatherAPI("e4717dbbbff341acb65170334251310");
-            _iconRenderer = new WeatherIconRenderer();
-
-            string folder = "Data";
-            string fileName = "SavedCities.txt";
-            string filePath = Path.Combine(folder, fileName);
-            _cityManager = new CityManager(filePath);
-            _savedCities = _cityManager.LoadSavedCities();
-
+            // Initialize all the tabs
             InitializeTabs();
             InitializeCurrentWeatherTab();
             InitializeForecastTab();
             InitializeSettingsTab();
-
-            var city = new City("Calgary", "Canada", 0.0, 0.0);
-            LoadCurrentWeather(city);
-            Load7DayForecast(city);
         }
     }
 }

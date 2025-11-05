@@ -10,15 +10,11 @@ namespace NorthSkies.Models
     {
         public string Name { get; }
         public string Country { get; }
-        public double Lat { get; }
-        public double Lon { get; }
 
-        public City(string name, string country, double lat, double lon)
+        public City(string name, string country)
         {
             Name = name;
             Country = country;
-            Lat = lat;
-            Lon = lon;
         }
     }
 }
