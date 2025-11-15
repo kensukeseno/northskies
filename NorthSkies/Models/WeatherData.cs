@@ -21,6 +21,8 @@ namespace NorthSkies.Models
         public double WindSpeedKPH { get; }
         public WeatherCondition Condition { get; }
         public double? PrecipitationChance { get; }
+        public bool IsDay { get; set; }
+
 
         public WeatherData(DateTime timestamp, double tempF, double tempC, double feelsLikeF, double feelsLikeC, double humidity, double windSpeedMPH, double windSpeedKPH, WeatherCondition condition, double? precipitationChance)
         {

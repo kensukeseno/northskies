@@ -60,6 +60,10 @@ namespace NorthSkies.Services
 
             var dto = JsonSerializer.Deserialize<WeatherApiResponse>(response);
             return _wheatherMapper.MapDaily(dto.forecast);
+
+            Debug.WriteLine("--- RAW 7-DAY FORECAST JSON RESPONSE ---");
+            Debug.WriteLine(response);
+            Debug.WriteLine("--------------------------------------");
         }
 
         public async Task<List<City>> GetCityByNameAsync(string name)
