@@ -1,4 +1,5 @@
 using NorthSkies.Models;
+using NorthSkies.Models.Enums;
 using NorthSkies.Renderers;
 using NorthSkies.Services;
 using System.ComponentModel;
@@ -35,7 +36,9 @@ namespace NorthSkies
 
             _weatherService = new WeatherService_WeatherAPI("e4717dbbbff341acb65170334251310");
             _iconRenderer = new WeatherIconRenderer();
+            SettingsManager.LoadUnits();
 
+            cmbUnits.SelectedIndex = SettingsManager.CurrentUnitSystem == UnitSystem.Metric ? 0 : 1;
             // Load and display Saved cities
             if (!Directory.Exists(_folder))
             {
@@ -178,15 +181,18 @@ namespace NorthSkies
             {
                 WeatherData weather = await _weatherService.GetCurrentWeatherAsync(city);
 
-                bool isMetric = cmbUnits.SelectedIndex == 0;
+                //bool isMetric = cmbUnits.SelectedIndex == 0;
 
-                lblTemp.Text = $"Temp: {(isMetric ? weather.TempC : weather.TempF)}°{(isMetric ? "C" : "F")}";
-                lblWind.Text = $"Wind: {(isMetric ? weather.WindSpeedKPH : weather.WindSpeedMPH)} {(isMetric ? "km/h" : "mph")}";
+                UnitSystem currentUnits = SettingsManager.CurrentUnitSystem;
+
+                lblTemp.Text = UnitConverter.GetTemperatureText(weather.TempC, weather.TempF, currentUnits);
+                lblWind.Text = UnitConverter.GetWindSpeedText(weather.WindSpeedKPH, weather.WindSpeedMPH, currentUnits);
                 lblHumidity.Text = $"Humidity: {weather.Humidity}%";
 
                 //picWeather.Image = _iconRenderer.RenderIcon(weather.Condition);
+                picWeather.Image = await _iconRenderer.RenderIconAsync(weather.Condition, weather.IsDay);
 
-                Debug.WriteLine($"City: {city.Name}, Temp: {(isMetric ? weather.TempC : weather.TempF)}°{(isMetric ? "C" : "F")}, Condition: {weather.Condition}");
+                Debug.WriteLine($"City: {city.Name},Temp: {lblTemp.Text}, Condition Code: {weather.Condition.Code}");
             }
             catch (Exception ex)
             {
@@ -199,7 +205,9 @@ namespace NorthSkies
             try
             {
                 List<WeatherData> forecast = await _weatherService.GetDailyForecastAsync(city);
-                bool isMetric = cmbUnits.SelectedIndex == 0;
+                //bool isMetric = cmbUnits.SelectedIndex == 0;
+
+                UnitSystem currentUnits = SettingsManager.CurrentUnitSystem;
 
                 if (forecast == null || forecast.Count == 0)
                 {
@@ -218,15 +226,15 @@ namespace NorthSkies
                     forecastPanel.ColumnStyles.Clear();
                     forecastPanel.RowStyles.Clear();
                 }
-
+                int forecastDays = forecast.Count;
                 // 1 row, 7 columns
                 forecastPanel.RowCount = 1;
-                forecastPanel.ColumnCount = 7;
+                forecastPanel.ColumnCount = forecastDays;
                 forecastPanel.Dock = DockStyle.Fill;
                 forecastPanel.AutoSize = true;
 
-                for (int i = 0; i < 7; i++)
-                    forecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 7f));
+                for (int i = 0; i < forecastDays; i++)
+                    forecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / forecastDays));
 
                 int col = 0;
                 foreach (var day in forecast)
@@ -243,7 +251,7 @@ namespace NorthSkies
                     dayPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 33));
 
                     string dayName = day.TimeStamp.ToString("ddd");
-                    string tempText = $"{(isMetric ? day.TempC : day.TempF)}°{(isMetric ? "C" : "F")}";
+                    string tempText = UnitConverter.GetTemperatureText(day.TempC, day.TempF, currentUnits);
 
                     Label lblDay = new Label()
                     {
@@ -255,7 +263,7 @@ namespace NorthSkies
 
                     PictureBox icon = new PictureBox()
                     {
-                        Image = SystemIcons.Information.ToBitmap(), // placeholder icon
+                        Image = await _iconRenderer.RenderIconAsync(day.Condition,true), // placeholder icon
                         SizeMode = PictureBoxSizeMode.Zoom,
                         Dock = DockStyle.Fill
                     };
@@ -333,6 +341,21 @@ namespace NorthSkies
                 _savedCities = _cityManager.LoadSavedCities();
                 ShowSavedCities();
             }
+        }
+        private void CmbUnits_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            if (cmbUnits.SelectedIndex == 0)
+            {
+                SettingsManager.CurrentUnitSystem = UnitSystem.Metric;
+            }
+            else if (cmbUnits.SelectedIndex == 1)
+            {
+                SettingsManager.CurrentUnitSystem = UnitSystem.Imperial;
+            }
+            SettingsManager.SaveUnits();
+            LoadCurrentWeather(_defaultCity);
+            Load7DayForecast(_defaultCity);
         }
     }
 }
