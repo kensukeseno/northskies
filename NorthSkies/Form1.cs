@@ -60,7 +60,8 @@ namespace NorthSkies
             ShowDefaultCity();
 
             LoadCurrentWeather(_defaultCity);
-            Load7DayForecast(_defaultCity);
+            LoadDailyForecast(_defaultCity);
+            LoadHourlyForecast(_defaultCity);
 
             _debounceTimer = new System.Windows.Forms.Timer();
             _debounceTimer.Interval = DebounceDelay;
@@ -200,7 +201,7 @@ namespace NorthSkies
             }
         }
 
-        private async void Load7DayForecast(City city)
+        private async void LoadDailyForecast(City city)
         {
             try
             {
@@ -216,25 +217,25 @@ namespace NorthSkies
                 }
 
                 // Create or reset
-                if (forecastPanel == null)
+                if (dailyForecastPanel == null)
                 {
-                    InitializeForecastTab();
+                    InitializeDailyForecastTab();
                 }
                 else
                 {
-                    forecastPanel.Controls.Clear();
-                    forecastPanel.ColumnStyles.Clear();
-                    forecastPanel.RowStyles.Clear();
+                    dailyForecastPanel.Controls.Clear();
+                    dailyForecastPanel.ColumnStyles.Clear();
+                    dailyForecastPanel.RowStyles.Clear();
                 }
                 int forecastDays = forecast.Count;
                 // 1 row, 7 columns
-                forecastPanel.RowCount = 1;
-                forecastPanel.ColumnCount = forecastDays;
-                forecastPanel.Dock = DockStyle.Fill;
-                forecastPanel.AutoSize = true;
+                dailyForecastPanel.RowCount = 1;
+                dailyForecastPanel.ColumnCount = forecastDays;
+                dailyForecastPanel.Dock = DockStyle.Fill;
+                dailyForecastPanel.AutoSize = true;
 
                 for (int i = 0; i < forecastDays; i++)
-                    forecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / forecastDays));
+                    dailyForecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / forecastDays));
 
                 int col = 0;
                 foreach (var day in forecast)
@@ -279,13 +280,95 @@ namespace NorthSkies
                     dayPanel.Controls.Add(icon, 0, 1);
                     dayPanel.Controls.Add(lblTemp, 0, 2);
 
-                    forecastPanel.Controls.Add(dayPanel, col, 0);
+                    dailyForecastPanel.Controls.Add(dayPanel, col, 0);
                     col++;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error fetching 7-day forecast: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error fetching daily forecast: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void LoadHourlyForecast(City city)
+        {
+            try
+            {
+                List<WeatherData> forecast = await _weatherService.GetHourlyForecastAsync(city);
+                //bool isMetric = cmbUnits.SelectedIndex == 0;
+
+                //    UnitSystem currentUnits = SettingsManager.CurrentUnitSystem;
+
+                if (forecast == null || forecast.Count == 0)
+                {
+                    MessageBox.Show("No forecast data available.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Create or reset
+                if (hourlyForecastPanel == null)
+                {
+                    InitializeHourlyForecastTab();
+                }
+                else
+                {
+                    //hourlyForecastPanel.Controls.Clear();
+                }
+
+                // Create and configure the TableLayoutPanel
+                hourlyForecastPanel.Dock = DockStyle.Fill; // This makes the table layout fill the entire form
+                hourlyForecastPanel.AutoScroll = true; // This makes the table layout scrollable
+                hourlyForecastPanel.RowCount = 25; // One row
+                hourlyForecastPanel.ColumnCount = 5; // Five columns
+
+                // Set column styles to distribute width equally across columns
+                dailyForecastPanel.ColumnStyles.Clear();
+                for (int i = 0; i < dailyForecastPanel.ColumnCount; i++)
+                {
+                    hourlyForecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20)); // Each column takes 20% width
+                }
+
+                // Set the column headers
+                Label headerLabel1 = new Label();
+                headerLabel1.Text = "Date";
+                Label headerLabel2 = new Label();
+                headerLabel2.Text = "Temparature";
+                Label headerLabel3 = new Label();
+                headerLabel3.Text = "Wind Speed";
+                Label headerLabel4 = new Label();
+                headerLabel4.Text = "Humidity";
+                Label headerLabel5 = new Label();
+                headerLabel5.Text = "Weather";
+                hourlyForecastPanel.Controls.Add(headerLabel1, 0, 0);
+                hourlyForecastPanel.Controls.Add(headerLabel2, 1, 0);
+                hourlyForecastPanel.Controls.Add(headerLabel3, 2, 0);
+                hourlyForecastPanel.Controls.Add(headerLabel4, 3, 0);
+                hourlyForecastPanel.Controls.Add(headerLabel5, 4, 0);
+
+                //Add data to the columns
+                    for (int i = 1; i < 25; i++)
+                    {
+                        Label col1 = new Label();
+                        col1.Text = forecast[i - 1].TimeStamp.ToString("yyyy-MM-dd hh:mm:ss tt");
+                        Label col2 = new Label();
+                        col2.Text = forecast[i - 1].TempC.ToString();
+                        Label col3 = new Label();
+                        col3.Text = forecast[i - 1].WindSpeedKPH.ToString();
+                        Label col4 = new Label();
+                        col4.Text = forecast[i - 1].Humidity.ToString();
+                        Label col5 = new Label();
+                        col5.Text = forecast[i - 1].Condition.DayText;
+
+                        hourlyForecastPanel.Controls.Add(col1, 0, i);
+                        hourlyForecastPanel.Controls.Add(col2, 1, i);
+                        hourlyForecastPanel.Controls.Add(col3, 2, i);
+                        hourlyForecastPanel.Controls.Add(col4, 3, i);
+                        hourlyForecastPanel.Controls.Add(col5, 4, i);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error fetching Hourly forecast: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -308,7 +391,7 @@ namespace NorthSkies
             {
                 City city = _savedCities.Find(c => c.Name == cityName);
                 LoadCurrentWeather(city);
-                Load7DayForecast(city);
+                LoadDailyForecast(city);
             }
         }
 
@@ -329,7 +412,7 @@ namespace NorthSkies
             if (_selectedCity != null)
             {
                 LoadCurrentWeather(_selectedCity);
-                Load7DayForecast(_selectedCity);
+                LoadDailyForecast(_selectedCity);
             }
         }
 
@@ -355,7 +438,7 @@ namespace NorthSkies
             }
             SettingsManager.SaveUnits();
             LoadCurrentWeather(_defaultCity);
-            Load7DayForecast(_defaultCity);
+            LoadDailyForecast(_defaultCity);
         }
     }
 }

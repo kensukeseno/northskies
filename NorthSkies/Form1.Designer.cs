@@ -21,7 +21,8 @@ namespace NorthSkies
         private Label lblTemp, lblWind, lblHumidity, lblUnits, lblDefaultCity, lblDefaultCityName, lblSavedCities, lblSearchCity;
         private PictureBox picWeather;
         private TextBox txtBoxCity;
-        private TableLayoutPanel forecastPanel;
+        private TableLayoutPanel dailyForecastPanel;
+        private TableLayoutPanel hourlyForecastPanel;
         private ComboBox cmbUnits, savedCities;
         private Button btnSetDefaullt, btnShowWeather1, btnShowWeather2, btnAddSavedCity;
 
@@ -31,7 +32,8 @@ namespace NorthSkies
             tabControl.Dock = DockStyle.Fill;
 
             tabControl.TabPages.Add("Current");
-            tabControl.TabPages.Add("7-Day Forecast");
+            tabControl.TabPages.Add("Daily Forecast");
+            tabControl.TabPages.Add("Hourly Forecast");
             tabControl.TabPages.Add("Settings");
 
             this.Controls.Add(tabControl);
@@ -63,13 +65,13 @@ namespace NorthSkies
             currentTab.Controls.Add(picWeather);
         }
 
-        private void InitializeForecastTab()
+        private void InitializeDailyForecastTab()
         {
-            // Assign the "7-Day Forecast" tab to a tab page
+            // Assign the "Daily Forecast" tab to a tab page
             TabPage forecastTab = tabControl.TabPages[1];
 
-            // Prepare 7 columns for 7-day forecast
-            forecastPanel = new TableLayoutPanel()
+            // Prepare 3 columns for Daily forecast
+            dailyForecastPanel = new TableLayoutPanel()
             {
                 RowCount = 1,
                 ColumnCount = 7,
@@ -81,22 +83,34 @@ namespace NorthSkies
             // Set the width to each column
             for (int i = 0; i < 7; i++)
             {
-                forecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 7f));
+                dailyForecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 7f));
             }
 
             // Add initial contents to each column
-            forecastPanel.Controls.Add(new Label() { Text = "Day", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 0, 0);
-            forecastPanel.Controls.Add(new Label() { Text = "Condition", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 1, 0);
-            forecastPanel.Controls.Add(new Label() { Text = "Temp", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 2, 0);
+            dailyForecastPanel.Controls.Add(new Label() { Text = "Day", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 0, 0);
+            dailyForecastPanel.Controls.Add(new Label() { Text = "Condition", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 1, 0);
+            dailyForecastPanel.Controls.Add(new Label() { Text = "Temp", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 2, 0);
 
             // Add all the designed contents to the tab page
-            forecastTab.Controls.Add(forecastPanel);
+            forecastTab.Controls.Add(dailyForecastPanel);
+        }
+
+        private void InitializeHourlyForecastTab()
+        {
+            // Assign the "Hourly Forecast" tab to a tab page
+            TabPage hourlyForecastTab = tabControl.TabPages[2];
+
+            // Initialize the hourlyForecastPanel
+            hourlyForecastPanel = new TableLayoutPanel();
+
+            // Add all the designed contents to the tab page
+            hourlyForecastTab.Controls.Add(hourlyForecastPanel);
         }
 
         private void InitializeSettingsTab()
         {
             // Assign the "Setting" tab to a tab page
-            TabPage settingsTab = tabControl.TabPages[2];
+            TabPage settingsTab = tabControl.TabPages[3];
 
             // Design the contents in the "Setting" tab
             lblUnits = new Label() { Text = "Units:", Location = new Point(20, 20), AutoSize = true };
@@ -152,7 +166,7 @@ namespace NorthSkies
             // Initialize all the tabs
             InitializeTabs();
             InitializeCurrentWeatherTab();
-            InitializeForecastTab();
+            InitializeDailyForecastTab();
             InitializeSettingsTab();
         }
     }
