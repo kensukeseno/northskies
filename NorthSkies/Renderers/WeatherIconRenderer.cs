@@ -14,17 +14,6 @@ namespace NorthSkies.Renderers
 {
     internal class WeatherIconRenderer
     {
-        /*private Dictionary<WeatherCondition, Image> _icons;
-
-        public Image GetIcon(WeatherCondition condition)
-        {
-            return null;
-        }
-        */
-
-
-        /* AL - just use WeatherCondition.GetIconUrl
-         */
         private static readonly HttpClient _httpClient = new HttpClient();
 
         public async Task<Image> RenderIconAsync(WeatherCondition condition, bool isDay)

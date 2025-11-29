@@ -5,6 +5,7 @@ using NorthSkies.Services;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
 
 namespace NorthSkies
 {
@@ -15,6 +16,7 @@ namespace NorthSkies
         private WeatherIconRenderer _iconRenderer;
         private List<City> _savedCities;
         private City _defaultCity;
+        private LocalUnitSettingsManager _unitSetting;
 
         // Timer to debounce the search city API call
         private System.Windows.Forms.Timer _debounceTimer;
@@ -29,26 +31,30 @@ namespace NorthSkies
         private string _savedCityFilePath;
         private string _defaultCityFileName = "DefaultCity.txt";
         private string _defaultCityFilePath;
+        private string _unitSettingFileName = "UnitSetting.txt";
+        private string _unitSettingFilePath;
 
         public Form1()
         {
             InitializeComponent();
 
+            // Initialize services
             _weatherService = new WeatherService_WeatherAPI("e4717dbbbff341acb65170334251310");
             _iconRenderer = new WeatherIconRenderer();
-            SettingsManager.LoadUnits();
-
-            cmbUnits.SelectedIndex = SettingsManager.CurrentUnitSystem == UnitSystem.Metric ? 0 : 1;
+            _savedCityFilePath = Path.Combine(_folder, _savedCityFileName);
+            _defaultCityFilePath = Path.Combine(_folder, _defaultCityFileName);
+            _unitSettingFilePath = Path.Combine(_folder, _unitSettingFileName);
+            _cityManager = new CityManager_LocalFile(_savedCityFilePath, _defaultCityFilePath);
+            _savedCities = _cityManager.LoadSavedCities();
+            _unitSetting = new LocalUnitSettingsManager(_unitSettingFilePath);
+            
+            ShowSavedCities();
+            
             // Load and display Saved cities
             if (!Directory.Exists(_folder))
             {
                 Directory.CreateDirectory(_folder);
             }
-            _savedCityFilePath = Path.Combine(_folder, _savedCityFileName);
-            _defaultCityFilePath = Path.Combine(_folder, _defaultCityFileName);
-            _cityManager = new CityManager_LocalFile(_savedCityFilePath, _defaultCityFilePath);
-            _savedCities = _cityManager.LoadSavedCities();
-            ShowSavedCities();
 
             // Display default city data
             _defaultCity = _cityManager.LoadDefaultCity();
@@ -59,14 +65,22 @@ namespace NorthSkies
             }
             ShowDefaultCity();
 
+            // Load the unit setting
+            _unitSetting.LoadUnits();
+            cmbUnits.SelectedIndex = _unitSetting.CurrentUnitSystem == UnitSystem.Metric ? 0 : 1;
+
+            // Initialize weather
             LoadCurrentWeather(_defaultCity);
             LoadDailyForecast(_defaultCity);
             LoadHourlyForecast(_defaultCity);
+
 
             _debounceTimer = new System.Windows.Forms.Timer();
             _debounceTimer.Interval = DebounceDelay;
             _debounceTimer.Tick += DebounceTimer_Tick;
 
+            // Add events to actions
+            cmbUnits.SelectedIndexChanged += CmbUnits_SelectedIndexChanged;
             txtBoxCity.TextChanged += CityTextBox_TextChanged;
             txtBoxCity.KeyDown += TextBoxCity_KeyDown;
             SetupSuggestionBox();
@@ -121,14 +135,14 @@ namespace NorthSkies
                 Height = 100,
                 Width = txtBoxCity.Width,
             };
-            tabControl.TabPages[2].Controls.Add(_suggestionBox);
+            settingsTab.Controls.Add(_suggestionBox);
 
             // Place this just below the search city textBox
             _suggestionBox.Left = txtBoxCity.Left;
             _suggestionBox.Top = txtBoxCity.Bottom;
 
             // Hide when clicking anywhere on TabPage outside textbox or dropdown
-            tabControl.TabPages[2].MouseDown += (s, e) =>
+            settingsTab.MouseDown += (s, e) =>
             {
                 if (!_suggestionBox.Bounds.Contains(e.Location) &&
                     !txtBoxCity.Bounds.Contains(e.Location))
@@ -182,9 +196,7 @@ namespace NorthSkies
             {
                 WeatherData weather = await _weatherService.GetCurrentWeatherAsync(city);
 
-                //bool isMetric = cmbUnits.SelectedIndex == 0;
-
-                UnitSystem currentUnits = SettingsManager.CurrentUnitSystem;
+                UnitSystem currentUnits = _unitSetting.CurrentUnitSystem;
 
                 lblTemp.Text = UnitConverter.GetTemperatureText(weather.TempC, weather.TempF, currentUnits);
                 lblWind.Text = UnitConverter.GetWindSpeedText(weather.WindSpeedKPH, weather.WindSpeedMPH, currentUnits);
@@ -208,7 +220,7 @@ namespace NorthSkies
                 List<WeatherData> forecast = await _weatherService.GetDailyForecastAsync(city);
                 //bool isMetric = cmbUnits.SelectedIndex == 0;
 
-                UnitSystem currentUnits = SettingsManager.CurrentUnitSystem;
+                UnitSystem currentUnits = _unitSetting.CurrentUnitSystem;
 
                 if (forecast == null || forecast.Count == 0)
                 {
@@ -295,9 +307,8 @@ namespace NorthSkies
             try
             {
                 List<WeatherData> forecast = await _weatherService.GetHourlyForecastAsync(city);
-                //bool isMetric = cmbUnits.SelectedIndex == 0;
 
-                //    UnitSystem currentUnits = SettingsManager.CurrentUnitSystem;
+                UnitSystem currentUnits = _unitSetting.CurrentUnitSystem;
 
                 if (forecast == null || forecast.Count == 0)
                 {
@@ -312,7 +323,7 @@ namespace NorthSkies
                 }
                 else
                 {
-                    //hourlyForecastPanel.Controls.Clear();
+                    hourlyForecastPanel.Controls.Clear();
                 }
 
                 // Create and configure the TableLayoutPanel
@@ -321,11 +332,12 @@ namespace NorthSkies
                 hourlyForecastPanel.RowCount = 25; // One row
                 hourlyForecastPanel.ColumnCount = 5; // Five columns
 
-                // Set column styles to distribute width equally across columns
+                // Set column widths
                 dailyForecastPanel.ColumnStyles.Clear();
-                for (int i = 0; i < dailyForecastPanel.ColumnCount; i++)
+                hourlyForecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 38));
+                for (int i = 0; i < dailyForecastPanel.ColumnCount - 1; i++)
                 {
-                    hourlyForecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20)); // Each column takes 20% width
+                    hourlyForecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18)); // Each column takes 20% width
                 }
 
                 // Set the column headers
@@ -346,30 +358,42 @@ namespace NorthSkies
                 hourlyForecastPanel.Controls.Add(headerLabel5, 4, 0);
 
                 //Add data to the columns
-                    for (int i = 1; i < 25; i++)
+                for (int i = 1; i < 25; i++)
+                {
+                    Label col1 = new Label() 
+                    { 
+                        Text = forecast[i - 1].TimeStamp.ToString("yyyy-MM-dd hh:mm:ss tt"), 
+                        Dock = DockStyle.Fill
+                    };
+                    Label col2 = new Label();
+                    col2.Text = UnitConverter.GetTemperatureText(forecast[i - 1].TempC, forecast[i - 1].TempF, currentUnits);
+                    Label col3 = new Label();
+                    col3.Text = forecast[i - 1].WindSpeedKPH.ToString();
+                    col3.Text = UnitConverter.GetWindSpeedText(forecast[i - 1].WindSpeedKPH, forecast[i - 1].WindSpeedMPH, currentUnits);
+                    Label col4 = new Label();
+                    col4.Text = forecast[i - 1].Humidity.ToString() + "%";
+                    PictureBox icon = new PictureBox()
                     {
-                        Label col1 = new Label();
-                        col1.Text = forecast[i - 1].TimeStamp.ToString("yyyy-MM-dd hh:mm:ss tt");
-                        Label col2 = new Label();
-                        col2.Text = forecast[i - 1].TempC.ToString();
-                        Label col3 = new Label();
-                        col3.Text = forecast[i - 1].WindSpeedKPH.ToString();
-                        Label col4 = new Label();
-                        col4.Text = forecast[i - 1].Humidity.ToString();
-                        Label col5 = new Label();
-                        col5.Text = forecast[i - 1].Condition.DayText;
-
-                        hourlyForecastPanel.Controls.Add(col1, 0, i);
-                        hourlyForecastPanel.Controls.Add(col2, 1, i);
-                        hourlyForecastPanel.Controls.Add(col3, 2, i);
-                        hourlyForecastPanel.Controls.Add(col4, 3, i);
-                        hourlyForecastPanel.Controls.Add(col5, 4, i);
+                        Image = await _iconRenderer.RenderIconAsync(forecast[i - 1].Condition, true), // placeholder icon
+                        SizeMode = PictureBoxSizeMode.Zoom,
+                        Dock = DockStyle.Fill
+                    };
+                    hourlyForecastPanel.Controls.Add(col1, 0, i);
+                    hourlyForecastPanel.Controls.Add(col2, 1, i);
+                    hourlyForecastPanel.Controls.Add(col3, 2, i);
+                    hourlyForecastPanel.Controls.Add(col4, 3, i);
+                    hourlyForecastPanel.Controls.Add(icon, 4, i);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error fetching Hourly forecast: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void BtnSetDefaultUnit_Click(object sender, EventArgs e)
+        {
+            _unitSetting.SaveUnits();
         }
 
         private void ShowSavedCities()
@@ -395,7 +419,7 @@ namespace NorthSkies
             }
         }
 
-        private void BtnSetDefault_Click(object sender, EventArgs e)
+        private void BtnSetDefaultCity_Click(object sender, EventArgs e)
         {
             string cityName = savedCities.Text;
             if (cityName != "")
@@ -404,7 +428,7 @@ namespace NorthSkies
                 _cityManager.SetDefaultCity(city);
                 _defaultCity = _cityManager.LoadDefaultCity();
                 ShowDefaultCity();
-            }  
+            }
         }
 
         private void BtnShowWeather2_Click(object sender, EventArgs e)
@@ -427,18 +451,17 @@ namespace NorthSkies
         }
         private void CmbUnits_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
             if (cmbUnits.SelectedIndex == 0)
             {
-                SettingsManager.CurrentUnitSystem = UnitSystem.Metric;
+                _unitSetting.CurrentUnitSystem = UnitSystem.Metric;
             }
             else if (cmbUnits.SelectedIndex == 1)
             {
-                SettingsManager.CurrentUnitSystem = UnitSystem.Imperial;
+                _unitSetting.CurrentUnitSystem = UnitSystem.Imperial;
             }
-            SettingsManager.SaveUnits();
             LoadCurrentWeather(_defaultCity);
             LoadDailyForecast(_defaultCity);
+            LoadHourlyForecast(_defaultCity);
         }
     }
 }

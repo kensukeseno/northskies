@@ -8,8 +8,6 @@ namespace NorthSkies.Models.Enums
 {
     internal enum UnitSystem
     {
-        //celsius, fahrenheit
-
         Metric, //Celsius, Km/h
         Imperial //Fahrenhit , mph
     }

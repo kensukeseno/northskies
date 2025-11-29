@@ -18,13 +18,14 @@ namespace NorthSkies
         }
 
         private TabControl tabControl;
+        private TabPage currentTab, forecastTab, settingsTab, hourlyForecastTab;
         private Label lblTemp, lblWind, lblHumidity, lblUnits, lblDefaultCity, lblDefaultCityName, lblSavedCities, lblSearchCity;
         private PictureBox picWeather;
         private TextBox txtBoxCity;
         private TableLayoutPanel dailyForecastPanel;
         private TableLayoutPanel hourlyForecastPanel;
         private ComboBox cmbUnits, savedCities;
-        private Button btnSetDefaullt, btnShowWeather1, btnShowWeather2, btnAddSavedCity;
+        private Button btnSetDefaulltUnit, btnSetDefaulltCity, btnShowWeather1, btnShowWeather2, btnAddSavedCity;
 
         private void InitializeTabs()
         {
@@ -42,7 +43,7 @@ namespace NorthSkies
         private void InitializeCurrentWeatherTab()
         {
             // Assign the "Current" tab to a tab page
-            TabPage currentTab = tabControl.TabPages[0];
+            currentTab = tabControl.TabPages[0];
 
             // Design the contents in the "Current" tab
             lblTemp = new Label() { Location = new Point(20, 20), AutoSize = true };
@@ -68,7 +69,7 @@ namespace NorthSkies
         private void InitializeDailyForecastTab()
         {
             // Assign the "Daily Forecast" tab to a tab page
-            TabPage forecastTab = tabControl.TabPages[1];
+            forecastTab = tabControl.TabPages[1];
 
             // Prepare 3 columns for Daily forecast
             dailyForecastPanel = new TableLayoutPanel()
@@ -98,7 +99,7 @@ namespace NorthSkies
         private void InitializeHourlyForecastTab()
         {
             // Assign the "Hourly Forecast" tab to a tab page
-            TabPage hourlyForecastTab = tabControl.TabPages[2];
+            hourlyForecastTab = tabControl.TabPages[2];
 
             // Initialize the hourlyForecastPanel
             hourlyForecastPanel = new TableLayoutPanel();
@@ -110,13 +111,15 @@ namespace NorthSkies
         private void InitializeSettingsTab()
         {
             // Assign the "Setting" tab to a tab page
-            TabPage settingsTab = tabControl.TabPages[3];
+            settingsTab = tabControl.TabPages[3];
 
             // Design the contents in the "Setting" tab
             lblUnits = new Label() { Text = "Units:", Location = new Point(20, 20), AutoSize = true };
             cmbUnits = new ComboBox() { Location = new Point(100, 20), Width = 150 };
             cmbUnits.Items.AddRange(new string[] { "Metric (°C, km/h)", "Imperial (°F, mph)" });
             cmbUnits.SelectedIndex = 0;
+            btnSetDefaulltUnit = new Button() { Text = "Set As Default", Location = new Point(380, 20), AutoSize = true };
+            btnSetDefaulltUnit.Click += BtnSetDefaultUnit_Click;
             lblDefaultCity = new Label() { Text = "Default City: ", Location = new Point(20, 50), AutoSize = true };
             lblDefaultCityName = new Label() { Location = new Point(100, 50), AutoSize = true };
             lblSavedCities = new Label() { Text = "Saved Cities:", Location = new Point(20, 80), AutoSize = true };
@@ -124,8 +127,8 @@ namespace NorthSkies
             savedCities.DropDownStyle = ComboBoxStyle.DropDownList;
             btnShowWeather1 = new Button() { Text = "Show Weather", Location = new Point(270, 80), AutoSize = true };
             btnShowWeather1.Click += BtnShowWeather1_Click;
-            btnSetDefaullt = new Button() { Text = "Set As Default", Location = new Point(380, 80), AutoSize = true };
-            btnSetDefaullt.Click += BtnSetDefault_Click;
+            btnSetDefaulltCity = new Button() { Text = "Set As Default", Location = new Point(380, 80), AutoSize = true };
+            btnSetDefaulltCity.Click += BtnSetDefaultCity_Click;
             lblSearchCity = new Label() { Text = "Search City:", Location = new Point(20, 110), AutoSize = true };
             txtBoxCity = new TextBox() { Location = new Point(100, 110), AutoSize = true };
             btnShowWeather2 = new Button() { Text = "Show Weather", Location = new Point(270, 110), AutoSize = true };
@@ -137,12 +140,13 @@ namespace NorthSkies
             // Add all the designed contents to the tab page
             settingsTab.Controls.Add(lblUnits);
             settingsTab.Controls.Add(cmbUnits);
+            settingsTab.Controls.Add(btnSetDefaulltUnit);
             settingsTab.Controls.Add(lblDefaultCity);
             settingsTab.Controls.Add(lblDefaultCityName);
             settingsTab.Controls.Add(lblSavedCities);
             settingsTab.Controls.Add(savedCities);
             settingsTab.Controls.Add(btnShowWeather1);
-            settingsTab.Controls.Add(btnSetDefaullt);
+            settingsTab.Controls.Add(btnSetDefaulltCity);
             settingsTab.Controls.Add(lblSearchCity);
             settingsTab.Controls.Add(txtBoxCity);
             settingsTab.Controls.Add(btnShowWeather2);
