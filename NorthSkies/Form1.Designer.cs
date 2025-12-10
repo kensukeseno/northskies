@@ -42,115 +42,197 @@ namespace NorthSkies
 
         private void InitializeCurrentWeatherTab()
         {
-            // Assign the "Current" tab to a tab page
             currentTab = tabControl.TabPages[0];
 
-            // Design the contents in the "Current" tab
-            lblTemp = new Label() { Location = new Point(20, 20), AutoSize = true };
-            lblWind = new Label() { Location = new Point(20, 50), AutoSize = true };
-            lblHumidity = new Label() { Location = new Point(20, 80), AutoSize = true };
-
-            // Design the weather icon
-            picWeather = new PictureBox()
+            // Main container for the tab
+            var mainPanel = new TableLayoutPanel()
             {
-                Location = new Point(400, 20),
-                Size = new Size(150, 150),
-                BorderStyle = BorderStyle.FixedSingle,
-                SizeMode = PictureBoxSizeMode.StretchImage
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 1,
+                Padding = new Padding(20),
             };
 
-            // Add all the designed contents to the tab page
-            currentTab.Controls.Add(lblTemp);
-            currentTab.Controls.Add(lblWind);
-            currentTab.Controls.Add(lblHumidity);
-            currentTab.Controls.Add(picWeather);
+            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
+            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
+
+            // LEFT SIDE — TEXT INFO
+            var textPanel = new FlowLayoutPanel()
+            {
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize = true,
+                Dock = DockStyle.Fill,
+                Padding = new Padding(20),
+            };
+
+            lblTemp = new Label()
+            {
+                AutoSize = true,
+                Font = new Font("Segoe UI", 54, FontStyle.Bold),
+                ForeColor = Color.Black,
+                Text = "--°",
+                Margin = new Padding(0, 0, 0, 20),
+            };
+
+            lblWind = new Label()
+            {
+                AutoSize = true,
+                Font = new Font("Segoe UI", 16, FontStyle.Regular),
+                ForeColor = Color.DimGray,
+                Text = "Wind: --",
+                Margin = new Padding(0, 5, 0, 5),
+            };
+
+            lblHumidity = new Label()
+            {
+                AutoSize = true,
+                Font = new Font("Segoe UI", 16, FontStyle.Regular),
+                ForeColor = Color.DimGray,
+                Text = "Humidity: --",
+                Margin = new Padding(0, 5, 0, 5),
+            };
+
+            textPanel.Controls.Add(lblTemp);
+            textPanel.Controls.Add(lblWind);
+            textPanel.Controls.Add(lblHumidity);
+
+            // RIGHT SIDE — WEATHER ICON
+            picWeather = new PictureBox()
+            {
+                Size = new Size(220, 220),
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BorderStyle = BorderStyle.None,
+                Margin = new Padding(40, 0, 0, 0),
+                Dock = DockStyle.None
+            };
+
+            mainPanel.Controls.Add(textPanel, 0, 0);
+            mainPanel.Controls.Add(picWeather, 1, 0);
+
+            currentTab.Controls.Add(mainPanel);
         }
 
         private void InitializeDailyForecastTab()
         {
-            // Assign the "Daily Forecast" tab to a tab page
             forecastTab = tabControl.TabPages[1];
+            Font useFont = new Font("Segoe UI", 32, FontStyle.Bold);
 
-            // Prepare 3 columns for Daily forecast
             dailyForecastPanel = new TableLayoutPanel()
             {
                 RowCount = 1,
                 ColumnCount = 7,
-                Dock = DockStyle.Fill,
+                Dock = DockStyle.Top,
                 AutoSize = true,
-                CellBorderStyle = TableLayoutPanelCellBorderStyle.Single
+                CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
+                Padding = new Padding(10),
             };
 
-            // Set the width to each column
             for (int i = 0; i < 7; i++)
-            {
                 dailyForecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 7f));
-            }
 
-            // Add initial contents to each column
-            dailyForecastPanel.Controls.Add(new Label() { Text = "Day", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 0, 0);
-            dailyForecastPanel.Controls.Add(new Label() { Text = "Condition", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 1, 0);
-            dailyForecastPanel.Controls.Add(new Label() { Text = "Temp", TextAlign = ContentAlignment.MiddleCenter, Dock = DockStyle.Fill, Font = new Font("Segoe UI", 10, FontStyle.Bold) }, 2, 0);
+            dailyForecastPanel.Controls.Add(new Label()
+            {
+                Text = "Day",
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = useFont
+            }, 0, 0);
 
-            // Add all the designed contents to the tab page
+            dailyForecastPanel.Controls.Add(new Label()
+            {
+                Text = "Condition",
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = useFont
+            }, 1, 0);
+
+            dailyForecastPanel.Controls.Add(new Label()
+            {
+                Text = "Temp",
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = useFont
+            }, 2, 0);
+
             forecastTab.Controls.Add(dailyForecastPanel);
         }
 
         private void InitializeHourlyForecastTab()
         {
-            // Assign the "Hourly Forecast" tab to a tab page
             hourlyForecastTab = tabControl.TabPages[2];
 
-            // Initialize the hourlyForecastPanel
-            hourlyForecastPanel = new TableLayoutPanel();
+            hourlyForecastPanel = new TableLayoutPanel()
+            {
+                Dock = DockStyle.Fill,
+                AutoSize = true,
+                Padding = new Padding(10),
+            };
 
-            // Add all the designed contents to the tab page
             hourlyForecastTab.Controls.Add(hourlyForecastPanel);
         }
 
         private void InitializeSettingsTab()
         {
-            // Assign the "Setting" tab to a tab page
             settingsTab = tabControl.TabPages[3];
 
-            // Design the contents in the "Setting" tab
-            lblUnits = new Label() { Text = "Units:", Location = new Point(20, 20), AutoSize = true };
-            cmbUnits = new ComboBox() { Location = new Point(100, 20), Width = 150 };
-            cmbUnits.Items.AddRange(new string[] { "Metric (°C, km/h)", "Imperial (°F, mph)" });
+            var layout = new TableLayoutPanel()
+            {
+                ColumnCount = 4,
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                Padding = new Padding(20),
+            };
+
+            layout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40));
+            layout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            layout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+
+            lblUnits = new Label() { Text = "Units:", AutoSize = true };
+            cmbUnits = new ComboBox() { Width = 150 };
+            cmbUnits.Items.AddRange(new[] { "Metric (°C, km/h)", "Imperial (°F, mph)" });
             cmbUnits.SelectedIndex = 0;
-            btnSetDefaulltUnit = new Button() { Text = "Set As Default", Location = new Point(380, 20), AutoSize = true };
+            btnSetDefaulltUnit = new Button() { Text = "Set As Default" };
             btnSetDefaulltUnit.Click += BtnSetDefaultUnit_Click;
-            lblDefaultCity = new Label() { Text = "Default City: ", Location = new Point(20, 50), AutoSize = true };
-            lblDefaultCityName = new Label() { Location = new Point(100, 50), AutoSize = true };
-            lblSavedCities = new Label() { Text = "Saved Cities:", Location = new Point(20, 80), AutoSize = true };
-            savedCities = new ComboBox() { Location = new Point(100, 80), Width = 150 };
+
+            layout.Controls.Add(lblUnits, 0, 0);
+            layout.Controls.Add(cmbUnits, 1, 0);
+            layout.Controls.Add(btnSetDefaulltUnit, 2, 0);
+
+            lblDefaultCity = new Label() { Text = "Default City:", AutoSize = true };
+            lblDefaultCityName = new Label() { AutoSize = true };
+
+            layout.Controls.Add(lblDefaultCity, 0, 1);
+            layout.Controls.Add(lblDefaultCityName, 1, 1);
+
+            lblSavedCities = new Label() { Text = "Saved Cities:", AutoSize = true };
+            savedCities = new ComboBox() { Width = 150 };
             savedCities.DropDownStyle = ComboBoxStyle.DropDownList;
-            btnShowWeather1 = new Button() { Text = "Show Weather", Location = new Point(270, 80), AutoSize = true };
+            btnShowWeather1 = new Button() { Text = "Show Weather" };
             btnShowWeather1.Click += BtnShowWeather1_Click;
-            btnSetDefaulltCity = new Button() { Text = "Set As Default", Location = new Point(380, 80), AutoSize = true };
+            btnSetDefaulltCity = new Button() { Text = "Set Default" };
             btnSetDefaulltCity.Click += BtnSetDefaultCity_Click;
-            lblSearchCity = new Label() { Text = "Search City:", Location = new Point(20, 110), AutoSize = true };
-            txtBoxCity = new TextBox() { Location = new Point(100, 110), AutoSize = true };
-            btnShowWeather2 = new Button() { Text = "Show Weather", Location = new Point(270, 110), AutoSize = true };
+
+            layout.Controls.Add(lblSavedCities, 0, 2);
+            layout.Controls.Add(savedCities, 1, 2);
+            layout.Controls.Add(btnShowWeather1, 2, 2);
+            layout.Controls.Add(btnSetDefaulltCity, 3, 2);
+
+            lblSearchCity = new Label() { Text = "Search City:", AutoSize = true };
+            txtBoxCity = new TextBox() { Width = 150 };
+            btnShowWeather2 = new Button() { Text = "Show Weather" };
             btnShowWeather2.Click += BtnShowWeather2_Click;
-            btnAddSavedCity = new Button() { Text = "Add to Saved Cities", Location = new Point(380, 110), AutoSize = true };
+            btnAddSavedCity = new Button() { Text = "Add" };
             btnAddSavedCity.Click += BtnAddSavedCity_Click;
 
+            layout.Controls.Add(lblSearchCity, 0, 3);
+            layout.Controls.Add(txtBoxCity, 1, 3);
+            layout.Controls.Add(btnShowWeather2, 2, 3);
+            layout.Controls.Add(btnAddSavedCity, 3, 3);
 
-            // Add all the designed contents to the tab page
-            settingsTab.Controls.Add(lblUnits);
-            settingsTab.Controls.Add(cmbUnits);
-            settingsTab.Controls.Add(btnSetDefaulltUnit);
-            settingsTab.Controls.Add(lblDefaultCity);
-            settingsTab.Controls.Add(lblDefaultCityName);
-            settingsTab.Controls.Add(lblSavedCities);
-            settingsTab.Controls.Add(savedCities);
-            settingsTab.Controls.Add(btnShowWeather1);
-            settingsTab.Controls.Add(btnSetDefaulltCity);
-            settingsTab.Controls.Add(lblSearchCity);
-            settingsTab.Controls.Add(txtBoxCity);
-            settingsTab.Controls.Add(btnShowWeather2);
-            settingsTab.Controls.Add(btnAddSavedCity);
+            settingsTab.Controls.Add(layout);
+            SetButtonHeights(settingsTab, 32);
+
         }
 
         private void InitializeComponent()
@@ -161,17 +243,32 @@ namespace NorthSkies
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(876, 504);
-            Margin = new Padding(2, 2, 2, 2);
+            Margin = new Padding(2);
             Name = "Form1";
             Text = "NorthSkies";
             ResumeLayout(false);
+        }
 
-            // Initialize all the tabs
-            InitializeTabs();
-            InitializeCurrentWeatherTab();
-            InitializeDailyForecastTab();
-            InitializeSettingsTab();
+        // fix button text cutting off
+        private void SetButtonHeights(Control parent, int height)
+        {
+            foreach (Control c in parent.Controls)
+            {
+                if (c is Button btn)
+                {
+                    btn.Height = height;
+                    btn.TextAlign = ContentAlignment.MiddleCenter;
+                    btn.Padding = new Padding(0);
+                    btn.AutoSize = false;
+                }
+
+                if (c.HasChildren)
+                {
+                    SetButtonHeights(c, height);
+                }
+            }
         }
     }
 }

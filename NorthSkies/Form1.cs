@@ -38,6 +38,23 @@ namespace NorthSkies
         {
             InitializeComponent();
 
+            var pictureBoxBackground = new PictureBox
+            {
+                Dock = DockStyle.Fill,
+                Image = Properties.Resources.weatherBackground,
+                SizeMode = PictureBoxSizeMode.StretchImage
+            };
+
+            this.Controls.Add(pictureBoxBackground);
+
+            InitializeTabs();
+            InitializeCurrentWeatherTab();
+            InitializeDailyForecastTab();
+            InitializeHourlyForecastTab();
+            InitializeSettingsTab();
+
+            tabControl.BringToFront();
+
             // Initialize services
             _weatherService = new WeatherService_WeatherAPI("e4717dbbbff341acb65170334251310");
             _iconRenderer = new WeatherIconRenderer();
