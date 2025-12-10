@@ -150,7 +150,7 @@ namespace NorthSkies
             {
                 Visible = false,
                 Height = 100,
-                Width = txtBoxCity.Width,
+                Width = 150,
             };
             settingsTab.Controls.Add(_suggestionBox);
 
@@ -235,7 +235,6 @@ namespace NorthSkies
             try
             {
                 List<WeatherData> forecast = await _weatherService.GetDailyForecastAsync(city);
-                //bool isMetric = cmbUnits.SelectedIndex == 0;
 
                 UnitSystem currentUnits = _unitSetting.CurrentUnitSystem;
 
@@ -256,8 +255,7 @@ namespace NorthSkies
                     dailyForecastPanel.ColumnStyles.Clear();
                     dailyForecastPanel.RowStyles.Clear();
                 }
-                int forecastDays = forecast.Count;
-                // 1 row, 7 columns
+                int forecastDays = 3;
                 dailyForecastPanel.RowCount = 1;
                 dailyForecastPanel.ColumnCount = forecastDays;
                 dailyForecastPanel.Dock = DockStyle.Fill;

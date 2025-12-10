@@ -120,39 +120,12 @@ namespace NorthSkies
             dailyForecastPanel = new TableLayoutPanel()
             {
                 RowCount = 1,
-                ColumnCount = 7,
+                ColumnCount = 3,
                 Dock = DockStyle.Top,
                 AutoSize = true,
                 CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
                 Padding = new Padding(10),
             };
-
-            for (int i = 0; i < 7; i++)
-                dailyForecastPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 7f));
-
-            dailyForecastPanel.Controls.Add(new Label()
-            {
-                Text = "Day",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = useFont
-            }, 0, 0);
-
-            dailyForecastPanel.Controls.Add(new Label()
-            {
-                Text = "Condition",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = useFont
-            }, 1, 0);
-
-            dailyForecastPanel.Controls.Add(new Label()
-            {
-                Text = "Temp",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = useFont
-            }, 2, 0);
 
             forecastTab.Controls.Add(dailyForecastPanel);
         }
@@ -192,7 +165,7 @@ namespace NorthSkies
             cmbUnits = new ComboBox() { Width = 150 };
             cmbUnits.Items.AddRange(new[] { "Metric (°C, km/h)", "Imperial (°F, mph)" });
             cmbUnits.SelectedIndex = 0;
-            btnSetDefaulltUnit = new Button() { Text = "Set As Default" };
+            btnSetDefaulltUnit = new Button() { Text = "Set Default" };
             btnSetDefaulltUnit.Click += BtnSetDefaultUnit_Click;
 
             layout.Controls.Add(lblUnits, 0, 0);
