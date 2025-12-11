@@ -2,10 +2,7 @@ using NorthSkies.Models;
 using NorthSkies.Models.Enums;
 using NorthSkies.Renderers;
 using NorthSkies.Services;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Windows.Forms;
 
 namespace NorthSkies
 {
@@ -167,7 +164,6 @@ namespace NorthSkies
                     _suggestionBox.Visible = false;
                 }
             };
-
             _suggestionBox.Click += SuggestionBox_Click;
         }
 

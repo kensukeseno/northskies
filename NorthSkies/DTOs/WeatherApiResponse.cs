@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace NorthSkies.DTOs
 {
 	public class WeatherApiResponse

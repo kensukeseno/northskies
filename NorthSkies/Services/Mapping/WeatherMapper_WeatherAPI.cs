@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using NorthSkies.DTOs;
 using NorthSkies.Models;
-using NorthSkies.Models.Enums;
 
 namespace NorthSkies.Services.Mapping
 {
@@ -64,10 +61,8 @@ namespace NorthSkies.Services.Mapping
 
                 }
             }
-
             return result;
         }
-
 
         public List<WeatherData> MapDaily(ForecastDto forecast)
         {
@@ -97,9 +92,7 @@ namespace NorthSkies.Services.Mapping
                     condition: condition,
                     precipitationChance: null
                 ));
-
             }
-
             return result;
         }
 
@@ -107,8 +100,5 @@ namespace NorthSkies.Services.Mapping
         {
             return DateTime.Parse(value);
         }
-
-        
-
     }
 }

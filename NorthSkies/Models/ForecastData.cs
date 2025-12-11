@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NorthSkies.Models.Enums;
-
 namespace NorthSkies.Models
 {
     /* AL extends current data with forecasted information:
@@ -45,7 +38,5 @@ namespace NorthSkies.Models
             MaxTempC = maxTempC;
             AveTempC = aveTempC;
         }
-
-
     }
 }

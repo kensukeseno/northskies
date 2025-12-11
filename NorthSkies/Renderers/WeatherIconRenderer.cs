@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NorthSkies.Models.Enums;
+﻿using System.Diagnostics;
 using NorthSkies.Models;
-using System.Drawing;
-using System.IO;
-using System.Net.Http;
 
 namespace NorthSkies.Renderers
 {
@@ -32,8 +23,6 @@ namespace NorthSkies.Renderers
                 Debug.WriteLine($"Error downloading icon from {url}: {ex.Message}");
                 return SystemIcons.Error.ToBitmap();
             }
-            
         }
-
     }
 }

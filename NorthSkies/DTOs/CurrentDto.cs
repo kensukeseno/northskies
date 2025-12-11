@@ -1,5 +1,3 @@
-using System;
-
 namespace NorthSkies.DTOs
 {
     public class CurrentDto

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NorthSkies.Models.Enums;
-
-namespace NorthSkies.Models
+﻿namespace NorthSkies.Models
 {
     /* AL - main model for weather data : current
      */
@@ -23,7 +16,6 @@ namespace NorthSkies.Models
         public double? PrecipitationChance { get; }
         public bool IsDay { get; set; }
 
-
         public WeatherData(DateTime timestamp, double tempF, double tempC, double feelsLikeF, double feelsLikeC, double humidity, double windSpeedMPH, double windSpeedKPH, WeatherCondition condition, double? precipitationChance)
         {
             TimeStamp = timestamp;
@@ -37,6 +29,5 @@ namespace NorthSkies.Models
             Condition = condition;
             PrecipitationChance = precipitationChance;
         }
-
     }
 }

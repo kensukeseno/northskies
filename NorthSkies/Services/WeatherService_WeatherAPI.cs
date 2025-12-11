@@ -1,10 +1,7 @@
 using NorthSkies.DTOs;
 using NorthSkies.Models;
 using NorthSkies.Services.Mapping;
-using System;
-using System.Diagnostics;
 using System.Text.Json;
-
 
 namespace NorthSkies.Services
 {
@@ -60,10 +57,6 @@ namespace NorthSkies.Services
 
             var dto = JsonSerializer.Deserialize<WeatherApiResponse>(response);
             return _wheatherMapper.MapDaily(dto.forecast);
-
-            Debug.WriteLine("--- RAW 7-DAY FORECAST JSON RESPONSE ---");
-            Debug.WriteLine(response);
-            Debug.WriteLine("--------------------------------------");
         }
 
         public async Task<List<City>> GetCityByNameAsync(string name)
@@ -75,5 +68,4 @@ namespace NorthSkies.Services
             return _cityMapper.MapCities(dto);
         }
     }
-
 }

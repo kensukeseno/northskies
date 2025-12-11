@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NorthSkies.DTOs;
 using NorthSkies.Models;
 

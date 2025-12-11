@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NorthSkies.Models.Enums;
+﻿using NorthSkies.Models.Enums;
 
 namespace NorthSkies.Services
 {
@@ -24,12 +19,10 @@ namespace NorthSkies.Services
         {
             if (unitSystem == UnitSystem.Metric)
             {
-                
                 return $"{windKPH:F0} km/h";
             }
             else 
             {
-                
                 return $"{windMPH:F0} mph";
             }
         }

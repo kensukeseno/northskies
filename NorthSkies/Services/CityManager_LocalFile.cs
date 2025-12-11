@@ -1,13 +1,5 @@
 ﻿using NorthSkies.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Web;
-using static System.Windows.Forms.Design.AxImporter;
 
 namespace NorthSkies.Services
 {
@@ -44,6 +36,7 @@ namespace NorthSkies.Services
                 return new List<City>();
             }
         }
+
         public void AddCity(City city) {
             try
             {
@@ -118,7 +111,6 @@ namespace NorthSkies.Services
                 Console.WriteLine($"⚠️ Unexpected error: {ex.Message}");
                 return null;
             }
-            
         }
         // Set a default city
         public void SetDefaultCity(City city)
@@ -138,6 +130,5 @@ namespace NorthSkies.Services
                 Console.WriteLine($"⚠️ Unexpected error: {ex.Message}");
             }
         }
-
     }
 }

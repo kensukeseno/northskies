@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.DirectoryServices.ActiveDirectory;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NorthSkies.Models;
+﻿using NorthSkies.Models;
 
 namespace NorthSkies.Services
 {
@@ -16,5 +10,4 @@ namespace NorthSkies.Services
         public Task<List<WeatherData>> GetHourlyForecastAsync(City city);
         public Task<List<WeatherData>> GetDailyForecastAsync(City city);
     }
-
 }
